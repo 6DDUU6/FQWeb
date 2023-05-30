@@ -42,4 +42,4 @@ params：和番茄保持一致
 ```
 
 ## 下载
-从[RELEASE]("https://github.com/fengyuecanzhu/FQWeb/releases")下载
+从[RELEASE](https://github.com/fengyuecanzhu/FQWeb/releases/latest)下载
