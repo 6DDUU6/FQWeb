@@ -17,7 +17,7 @@ android {
         applicationId = "me.fycz.fqweb"
         minSdk = 24
         targetSdk = 33
-        versionCode = 10
+        versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -70,9 +70,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
 
     //webServer
-    val nanoHttpdVersion = "2.3.1"
-    implementation("org.nanohttpd:nanohttpd:$nanoHttpdVersion")
-    implementation("org.nanohttpd:nanohttpd-websocket:$nanoHttpdVersion")
+    implementation("org.nanohttpd:nanohttpd:2.3.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
