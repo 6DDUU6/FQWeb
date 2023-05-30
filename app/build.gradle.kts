@@ -3,9 +3,15 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+val keyProps = `java.util`.Properties()
+val keyPropsFile: File = rootProject.file("keystore/keystore.properties")
+if (keyPropsFile.exists()) {
+    keyProps.load(`java.io`.FileInputStream(keyPropsFile))
+}
+
 android {
     namespace = "me.fycz.fqweb"
-    compileSdk =  33
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "me.fycz.fqweb"
@@ -17,11 +23,36 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        register("myConfig") {
+            keyAlias = keyProps["keyAlias"].toString()
+            keyPassword = keyProps["keyPassword"].toString()
+            storeFile = file(keyProps["storeFile"].toString())
+            storePassword = keyProps["storePassword"].toString()
+            enableV1Signing = true
+            enableV2Signing = true
+            enableV3Signing = true
+        }
+    }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            if (keyPropsFile.exists()) {
+                signingConfig = signingConfigs.getByName("myConfig")
+            }
         }
+    }
+    android.applicationVariants.all {
+        val fileName = "FQWeb_v${defaultConfig.versionName}.apk"
+        outputs.map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                output.outputFileName = fileName
+            }
     }
 
     compileOptions {
