@@ -6,7 +6,6 @@ import okio.Pipe
 import okio.buffer
 import me.fycz.fqweb.utils.JsonUtils
 import me.fycz.fqweb.web.controller.DragonController
-import xyz.fycz.micat.hook.com.dragon.read.web.ReturnData
 import java.io.BufferedWriter
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream

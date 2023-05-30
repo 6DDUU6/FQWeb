@@ -1,4 +1,4 @@
-package xyz.fycz.micat.hook.com.dragon.read.web
+package me.fycz.fqweb.web
 
 
 class ReturnData {

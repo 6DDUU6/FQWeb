@@ -1,7 +1,7 @@
 package me.fycz.fqweb.web.controller
 
 import me.fycz.fqweb.utils.getObjectField
-import xyz.fycz.micat.hook.com.dragon.read.web.ReturnData
+import me.fycz.fqweb.web.ReturnData
 import me.fycz.fqweb.web.service.DragonService
 
 

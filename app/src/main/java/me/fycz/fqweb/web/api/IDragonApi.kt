@@ -1,6 +1,6 @@
 package me.fycz.fqweb.web.api
 
-import xyz.fycz.micat.hook.com.dragon.read.web.ReturnData
+import me.fycz.fqweb.web.ReturnData
 import me.fycz.fqweb.web.api.annotation.DragonGet
 
 /**
