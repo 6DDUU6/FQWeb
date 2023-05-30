@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">番茄Web</string>
+    <string name="xposed_desc">为番茄小说添加Web服务</string>
+</resources>
