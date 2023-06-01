@@ -6,7 +6,9 @@ import me.fycz.fqweb.utils.GlobalApp
 import me.fycz.fqweb.utils.callMethod
 import me.fycz.fqweb.utils.callStaticMethod
 import me.fycz.fqweb.utils.findClass
+import me.fycz.fqweb.utils.findField
 import me.fycz.fqweb.utils.getObjectField
+import me.fycz.fqweb.utils.log
 import me.fycz.fqweb.utils.new
 import me.fycz.fqweb.utils.setBooleanField
 import me.fycz.fqweb.utils.setFloatField
@@ -52,7 +54,8 @@ object DragonService {
         setField(getSearchPageRequest, "passback", (page - 1) * 10)
         return callFunction(
             clzName = "${Config.rpcApiPackage}.a",
-            obj = getSearchPageRequest
+            obj = getSearchPageRequest,
+            funcName = "b"
         )
     }
 
@@ -136,24 +139,27 @@ object DragonService {
         try {
             val fieldName = FiledNameUtils.underlineToCamel(name)
             val fieldValueStr = value.toString()
-            when (val field = obj.getObjectField(fieldName)!!) {
+            when (val field = obj.getObjectField(fieldName)) {
                 is Short -> obj.setShortField(fieldName, fieldValueStr.toShort())
                 is Int -> obj.setIntField(fieldName, fieldValueStr.toInt())
                 is Long -> obj.setLongField(fieldName, fieldValueStr.toLong())
                 is Float -> obj.setFloatField(fieldName, fieldValueStr.toFloat())
                 is Boolean -> obj.setBooleanField(fieldName, fieldValueStr.toBoolean())
                 else -> {
-                    val fieldClz = field.javaClass
+                    val fieldClz = field?.javaClass ?: obj.findField(fieldName)?.type!!
                     if (fieldClz.isEnum) {
-                        obj.setObjectField(fieldName, fieldClz.callStaticMethod("findByValue", fieldValueStr.toInt()))
+                        obj.setObjectField(
+                            fieldName,
+                            fieldClz.callStaticMethod("findByValue", fieldValueStr.toInt())
+                        )
                     } else {
                         //String
-                        obj.setObjectField(fieldName, value)
+                        obj.setObjectField(fieldName, fieldValueStr)
                     }
                 }
             }
         } catch (e: Throwable) {
-            //log(e)
+            log("Set field $name=$value error：\n${e.stackTraceToString()}")
         }
     }
 }

@@ -16,7 +16,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.util.*
 
-const val TAG = "MiCat"
+const val TAG = "FQWeb"
 
 fun log(any: Any?, online: Boolean = false) {
     val msg: String = if (any is Throwable) Log.getStackTraceString(any) else any.toString()
@@ -82,7 +82,7 @@ inline fun Member.hookBeforeMethod(crossinline hooker: (XC_MethodHook.MethodHook
 inline fun Class<*>.hookBeforeMethod(
     method: String?,
     vararg args: Any?,
-    crossinline hooker: Hooker
+    crossinline hooker: Hooker,
 ) = hookMethod(method, *args, object : XC_MethodHook() {
     override fun beforeHookedMethod(param: MethodHookParam) = param.callHooker(hooker)
 })
@@ -90,7 +90,7 @@ inline fun Class<*>.hookBeforeMethod(
 inline fun Class<*>.hookAfterMethod(
     method: String?,
     vararg args: Any?,
-    crossinline hooker: Hooker
+    crossinline hooker: Hooker,
 ) = hookMethod(method, *args, object : XC_MethodHook() {
     override fun afterHookedMethod(param: MethodHookParam) = param.callHooker(hooker)
 })
@@ -98,7 +98,7 @@ inline fun Class<*>.hookAfterMethod(
 inline fun Class<*>.replaceMethod(
     method: String?,
     vararg args: Any?,
-    crossinline replacer: Replacer
+    crossinline replacer: Replacer,
 ) = hookMethod(method, *args, object : XC_MethodReplacement() {
     override fun replaceHookedMethod(param: MethodHookParam) = param.callReplacer(replacer)
 })
@@ -203,7 +203,7 @@ inline fun String.hookBeforeMethod(
     classLoader: ClassLoader,
     method: String?,
     vararg args: Any?,
-    crossinline hooker: Hooker
+    crossinline hooker: Hooker,
 ) = try {
     findClass(classLoader).hookBeforeMethod(method, *args, hooker = hooker)
 } catch (e: XposedHelpers.ClassNotFoundError) {
@@ -218,7 +218,7 @@ inline fun String.hookAfterMethod(
     classLoader: ClassLoader,
     method: String?,
     vararg args: Any?,
-    crossinline hooker: Hooker
+    crossinline hooker: Hooker,
 ) = try {
     findClass(classLoader).hookAfterMethod(method, *args, hooker = hooker)
 } catch (e: XposedHelpers.ClassNotFoundError) {
@@ -233,7 +233,7 @@ inline fun String.replaceMethod(
     classLoader: ClassLoader,
     method: String?,
     vararg args: Any?,
-    crossinline replacer: Replacer
+    crossinline replacer: Replacer,
 ) = try {
     findClass(classLoader).replaceMethod(method, *args, replacer = replacer)
 } catch (e: XposedHelpers.ClassNotFoundError) {
@@ -251,6 +251,12 @@ inline fun <T, R> T.runCatchingOrNull(func: T.() -> R?) = try {
     func()
 } catch (e: Throwable) {
     null
+}
+
+fun Any.findField(field: String?): Field? = XposedHelpers.findField(this.javaClass, field)
+
+fun Any.findFiledOrNull(field: String?): Field? = runCatchingOrNull {
+    XposedHelpers.findField(this.javaClass, field)
 }
 
 fun Any.getObjectField(field: String?): Any? = XposedHelpers.getObjectField(this, field)
@@ -358,7 +364,7 @@ fun Any.callMethod(methodName: String?, parameterTypes: Array<Class<*>>, vararg 
 fun Any.callMethodOrNull(
     methodName: String?,
     parameterTypes: Array<Class<*>>,
-    vararg args: Any?
+    vararg args: Any?,
 ): Any? = runCatchingOrNull {
     XposedHelpers.callMethod(this, methodName, parameterTypes, *args)
 }
@@ -366,13 +372,13 @@ fun Any.callMethodOrNull(
 fun Class<*>.callStaticMethod(
     methodName: String?,
     parameterTypes: Array<Class<*>>,
-    vararg args: Any?
+    vararg args: Any?,
 ): Any? = XposedHelpers.callStaticMethod(this, methodName, parameterTypes, *args)
 
 fun Class<*>.callStaticMethodOrNull(
     methodName: String?,
     parameterTypes: Array<Class<*>>,
-    vararg args: Any?
+    vararg args: Any?,
 ): Any? = runCatchingOrNull {
     XposedHelpers.callStaticMethod(this, methodName, parameterTypes, *args)
 }
@@ -418,7 +424,7 @@ fun <T> T.setBooleanField(field: String?, value: Boolean) = apply {
 
 inline fun XResources.hookLayout(
     id: Int,
-    crossinline hooker: (XC_LayoutInflated.LayoutInflatedParam) -> Unit
+    crossinline hooker: (XC_LayoutInflated.LayoutInflatedParam) -> Unit,
 ) {
     try {
         hookLayout(id, object : XC_LayoutInflated() {
@@ -439,7 +445,7 @@ inline fun XResources.hookLayout(
     pkg: String,
     type: String,
     name: String,
-    crossinline hooker: (XC_LayoutInflated.LayoutInflatedParam) -> Unit
+    crossinline hooker: (XC_LayoutInflated.LayoutInflatedParam) -> Unit,
 ) {
     try {
         val id = getIdentifier(name, type, pkg)
@@ -500,7 +506,7 @@ inline fun ClassLoader.findDexClassLoader(): BaseDexClassLoader? {
     return classLoader
 }
 
-inline fun <T> T?.isNull(crossinline isNull: () -> Unit):T? {
+inline fun <T> T?.isNull(crossinline isNull: () -> Unit): T? {
     if (this == null) isNull()
     return this
 }
