@@ -14,11 +14,12 @@ object DragonController {
 
     fun search(parameters: Map<String, List<String>>): ReturnData {
         val keyword = parameters["query"]?.firstOrNull()
+        val page = parameters["page"]?.firstOrNull()?.toInt() ?: 1
         val returnData = ReturnData()
         if (keyword.isNullOrEmpty()) {
             return returnData.setErrorMsg("参数query不能为空")
         }
-        returnData.setData(DragonService.search(keyword))
+        returnData.setData(DragonService.search(keyword, page))
         return returnData
     }
 

@@ -26,7 +26,7 @@ object DragonService {
         GlobalApp.getClassloader()
     }
 
-    fun search(keyword: String): Any {
+    fun search(keyword: String, page: Int = 1): Any {
         val GetSearchPageRequest =
             "${Config.rpcModelPackage}.GetSearchPageRequest".findClass(dragonClassLoader)
         val getSearchPageRequest = GetSearchPageRequest.newInstance()
@@ -48,6 +48,8 @@ object DragonService {
                 .callStaticMethod("findByValue", arrayOf(Int::class.java), 1)
         )
         getSearchPageRequest.setShortField("userIsLogin", 1)
+        setField(getSearchPageRequest, "offset", (page - 1) * 10)
+        setField(getSearchPageRequest, "passback", (page - 1) * 10)
         return callFunction(
             clzName = "${Config.rpcApiPackage}.a",
             obj = getSearchPageRequest
@@ -130,20 +132,22 @@ object DragonService {
         }
     }
 
-    private fun setField(obj: Any, name: String, value: String) {
+    private fun setField(obj: Any, name: String, value: Any) {
         try {
             val fieldName = FiledNameUtils.underlineToCamel(name)
+            val fieldValueStr = value.toString()
             when (val field = obj.getObjectField(fieldName)!!) {
-                is Short -> obj.setShortField(fieldName, value.toShort())
-                is Int -> obj.setIntField(fieldName, value.toInt())
-                is Long -> obj.setLongField(fieldName, value.toLong())
-                is Float -> obj.setFloatField(fieldName, value.toFloat())
-                is Boolean -> obj.setBooleanField(fieldName, value.toBoolean())
+                is Short -> obj.setShortField(fieldName, fieldValueStr.toShort())
+                is Int -> obj.setIntField(fieldName, fieldValueStr.toInt())
+                is Long -> obj.setLongField(fieldName, fieldValueStr.toLong())
+                is Float -> obj.setFloatField(fieldName, fieldValueStr.toFloat())
+                is Boolean -> obj.setBooleanField(fieldName, fieldValueStr.toBoolean())
                 else -> {
                     val fieldClz = field.javaClass
                     if (fieldClz.isEnum) {
-                        obj.setObjectField(fieldName, fieldClz.callStaticMethod("findByValue", value))
+                        obj.setObjectField(fieldName, fieldClz.callStaticMethod("findByValue", fieldValueStr.toInt()))
                     } else {
+                        //String
                         obj.setObjectField(fieldName, value)
                     }
                 }
