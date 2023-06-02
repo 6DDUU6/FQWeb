@@ -15,7 +15,7 @@ Web服务可在番茄小说设置界面开启，默认运行在9999端口
 ### 搜索
 ```
 method：GET
-url：http://localhost:9999/search?query=关键字
+url：http://localhost:9999/search?query=关键字&page=页数
 ```
 ### 获取书籍详情
 ```
