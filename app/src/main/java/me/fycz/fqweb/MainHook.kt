@@ -17,6 +17,7 @@ import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import me.fycz.fqweb.constant.Config
 import me.fycz.fqweb.utils.GlobalApp
+import me.fycz.fqweb.utils.NetworkUtils
 import me.fycz.fqweb.utils.SPUtils
 import me.fycz.fqweb.utils.callMethod
 import me.fycz.fqweb.utils.findClass
@@ -54,11 +55,13 @@ class MainHook : IXposedHookLoadPackage {
                 SPUtils.init(app)
                 httpServer = HttpServer(SPUtils.getInt("port", 9999))
                 hookSetting(lpparam.classLoader)
-                if (!httpServer.wasStarted() && SPUtils.getBoolean(
-                        "autoStart",
-                        false
-                    )
-                ) httpServer.start()
+                if (!httpServer.isAlive && SPUtils.getBoolean("autoStart", false)) {
+                    try {
+                        httpServer.start()
+                    } catch (e: Throwable) {
+                        log(e)
+                    }
+                }
             }
         }
     }
@@ -81,12 +84,14 @@ class MainHook : IXposedHookLoadPackage {
                     setting.setObjectField("e", "Web服务")
                     setting.setObjectField(
                         "i",
-                        if (httpServer.isAlive) "已开启(端口：${
-                            SPUtils.getInt(
-                                "port",
-                                9999
-                            )
-                        })" else "未开启"
+                        if (httpServer.isAlive)
+                            "已开启(http://${NetworkUtils.getLocalIPAddress()?.hostAddress ?: "localhost"}:${
+                                SPUtils.getInt(
+                                    "port",
+                                    9999
+                                )
+                            })"
+                        else "未开启"
                     )
                     list.add(0, setting)
                 }
@@ -237,10 +242,18 @@ class MainHook : IXposedHookLoadPackage {
                     SPUtils.putInt("port", port)
                 }
                 if (s_enable.isChecked) {
-                    restartServe()
-                    settingView.setObjectField("i", "已开启(端口：$port)")
-                    adapter?.callMethod("notifyItemChanged", 0)
-                    //Toast.makeText(context, "服务已开启，运行在${port}端口", Toast.LENGTH_SHORT).show()
+                    try {
+                        restartServe()
+                        settingView.setObjectField(
+                            "i",
+                            "已开启(http://${NetworkUtils.getLocalIPAddress()?.hostAddress ?: "localhost"}:$port)"
+                        )
+                        adapter?.callMethod("notifyItemChanged", 0)
+                        //Toast.makeText(context, "服务已开启，运行在${port}端口", Toast.LENGTH_SHORT).show()
+                    } catch (e: Throwable) {
+                        log(e)
+                        Toast.makeText(context, e.localizedMessage ?: "", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
                     httpServer.stop()
                     settingView.setObjectField("i", "未开启")
