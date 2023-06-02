@@ -246,7 +246,12 @@ class MainHook : IXposedHookLoadPackage {
                         restartServe()
                         settingView.setObjectField(
                             "i",
-                            "已开启(http://${NetworkUtils.getLocalIPAddress()?.hostAddress ?: "localhost"}:$port)"
+                            "已开启(http://${NetworkUtils.getLocalIPAddress()?.hostAddress ?: "localhost"}:${
+                                SPUtils.getInt(
+                                    "port",
+                                    9999
+                                )
+                            })"
                         )
                         adapter?.callMethod("notifyItemChanged", 0)
                         //Toast.makeText(context, "服务已开启，运行在${port}端口", Toast.LENGTH_SHORT).show()
