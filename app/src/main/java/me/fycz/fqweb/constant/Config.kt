@@ -1,5 +1,6 @@
 package me.fycz.fqweb.constant
 
+import de.robv.android.xposed.XposedHelpers
 import me.fycz.fqweb.utils.GlobalApp
 import me.fycz.fqweb.utils.findClass
 
@@ -10,16 +11,17 @@ import me.fycz.fqweb.utils.findClass
  */
 object Config {
 
+    private val dragonClassloader by lazy { GlobalApp.getClassloader() }
+
     val settingRecyclerAdapterClz: String by lazy {
         when (versionCode) {
             532 -> "com.dragon.read.base.recyler.c"
             57932 -> "com.dragon.read.recyler.c"
             else -> {
                 kotlin.runCatching {
-                    "com.dragon.read.recyler.c".findClass(GlobalApp.getClassloader())
+                    "com.dragon.read.recyler.c".findClass(dragonClassloader)
                     return@lazy "com.dragon.read.recyler.c"
                 }
-                "com.dragon.read.base.recyler.c".findClass(GlobalApp.getClassloader())
                 "com.dragon.read.base.recyler.c"
             }
         }
@@ -32,10 +34,9 @@ object Config {
             57932 -> "$prefix.k"
             else -> {
                 kotlin.runCatching {
-                    "$prefix.k".findClass(GlobalApp.getClassloader())
+                    "$prefix.k".findClass(dragonClassloader)
                     return@lazy "$prefix.k"
                 }
-                "$prefix.g".findClass(GlobalApp.getClassloader())
                 "$prefix.g"
             }
         }
@@ -43,19 +44,41 @@ object Config {
 
     val settingItemStrFieldName: String by lazy {
         when (versionCode) {
-            /*532 -> "i"
-            57932 -> "i"*/
+            532 -> "i"
+            57932 -> "i"
             58332 -> "j"
-            else -> "i"
+            else -> {
+                val settingItemClz =
+                    "com.dragon.read.pages.mine.settings.e".findClass(dragonClassloader)
+                val iField = XposedHelpers.findField(settingItemClz, "i")
+                if (iField.type == CharSequence::class.java) {
+                    "i"
+                } else {
+                    "j"
+                }
+            }
         }
     }
 
     val readerFullRequestClz: String by lazy {
         when (versionCode) {
-            /*532 -> "$rpcApiPackage.e"
-            57932 -> "$rpcApiPackage.e"*/
+            532 -> "$rpcApiPackage.e"
+            57932 -> "$rpcApiPackage.e"
             58332 -> "$rpcApiPackage.f"
-            else -> "$rpcApiPackage.e"
+            else -> {
+                val FullRequest =
+                    "$rpcModelPackage.FullRequest".findClass(dragonClassloader)
+                kotlin.runCatching {
+                    XposedHelpers.findMethodExact(
+                        "$rpcApiPackage.e",
+                        dragonClassloader,
+                        "a",
+                        FullRequest
+                    )
+                    "$rpcApiPackage.e"
+                }
+                "$rpcApiPackage.f"
+            }
         }
     }
 
@@ -66,10 +89,10 @@ object Config {
             57932 -> "$prefix.rpc"
             else -> {
                 kotlin.runCatching {
-                    "$prefix.rpc.a".findClass(GlobalApp.getClassloader())
+                    "$prefix.rpc.a".findClass(dragonClassloader)
                     return@lazy "$prefix.rpc"
                 }
-                "$prefix.a.a".findClass(GlobalApp.getClassloader())
+                "$prefix.a.a".findClass(dragonClassloader)
                 "$prefix.a"
             }
         }
