@@ -87,7 +87,7 @@ object DragonService {
         val fullRequest = FullRequest.newInstance()
         fullRequest.setObjectField("itemId", itemId)
         return callFunction(
-            clzName = "${Config.rpcApiPackage}.e",
+            clzName = Config.readerFullRequestClz,
             obj = fullRequest
         )
     }

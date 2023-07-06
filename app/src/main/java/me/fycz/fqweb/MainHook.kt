@@ -83,7 +83,7 @@ class MainHook : IXposedHookLoadPackage {
                             .new(context)
                     setting.setObjectField("e", "Web服务")
                     setting.setObjectField(
-                        "i",
+                        Config.settingItemStrFieldName,
                         if (httpServer.isAlive)
                             "已开启(http://${NetworkUtils.getLocalIPAddress()?.hostAddress ?: "localhost"}:${
                                 SPUtils.getInt(
@@ -245,7 +245,7 @@ class MainHook : IXposedHookLoadPackage {
                     try {
                         restartServe()
                         settingView.setObjectField(
-                            "i",
+                            Config.settingItemStrFieldName,
                             "已开启(http://${NetworkUtils.getLocalIPAddress()?.hostAddress ?: "localhost"}:${
                                 SPUtils.getInt(
                                     "port",
@@ -254,16 +254,14 @@ class MainHook : IXposedHookLoadPackage {
                             })"
                         )
                         adapter?.callMethod("notifyItemChanged", 0)
-                        //Toast.makeText(context, "服务已开启，运行在${port}端口", Toast.LENGTH_SHORT).show()
                     } catch (e: Throwable) {
                         log(e)
                         Toast.makeText(context, e.localizedMessage ?: "", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     httpServer.stop()
-                    settingView.setObjectField("i", "未开启")
+                    settingView.setObjectField(Config.settingItemStrFieldName, "未开启")
                     adapter?.callMethod("notifyItemChanged", 0)
-                    //Toast.makeText(context, "服务已关闭", Toast.LENGTH_SHORT).show()
                 }
             }.create().show()
     }

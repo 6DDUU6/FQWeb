@@ -41,7 +41,25 @@ object Config {
         }
     }
 
-    val rpcApiPackage : String by lazy {
+    val settingItemStrFieldName: String by lazy {
+        when (versionCode) {
+            /*532 -> "i"
+            57932 -> "i"*/
+            58332 -> "j"
+            else -> "i"
+        }
+    }
+
+    val readerFullRequestClz: String by lazy {
+        when (versionCode) {
+            /*532 -> "$rpcApiPackage.e"
+            57932 -> "$rpcApiPackage.e"*/
+            58332 -> "$rpcApiPackage.f"
+            else -> "$rpcApiPackage.e"
+        }
+    }
+
+    val rpcApiPackage: String by lazy {
         val prefix = "com.dragon.read.rpc"
         when (versionCode) {
             532 -> "$prefix.a"
