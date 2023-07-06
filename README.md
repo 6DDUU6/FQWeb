@@ -11,6 +11,8 @@ Web服务可在番茄小说设置界面开启，默认运行在9999端口
 
 注：目前仅适配了`5.2.3.32`, `5.7.9.32`, `5.8.3.32`版本([点此下载](https://fycz.lanzoum.com/b00o3g1kf))，其他版本不一定能用(可自行尝试，一般临近几个版本应该都能用)
 
+如需适配其他版本，请发[Issue](https://github.com/fengyuecanzhu/FQWeb/issues/new)并附上对应apk
+
 ## API列表
 ### 搜索
 ```
