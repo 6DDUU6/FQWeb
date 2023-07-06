@@ -165,6 +165,5 @@
 -keep class * extends java.lang.Error
 -keep class **Exception
 
-# 保留MainHook、ReturnData
--keep class me.fycz.fqweb.MainHook
--keep class me.fycz.fqweb.web.ReturnData{*;}
+# 保留
+-keep class me.fycz.fqweb.** {*;}
