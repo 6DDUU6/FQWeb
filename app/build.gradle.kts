@@ -17,14 +17,14 @@ android {
         applicationId = "me.fycz.fqweb"
         minSdk = 24
         targetSdk = 33
-        versionCode = 13
-        versionName = "1.3"
+        versionCode = 131
+        versionName = "1.3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
-        register("myConfig") {
+        create("myConfig") {
             keyAlias = keyProps["keyAlias"].toString()
             keyPassword = keyProps["keyPassword"].toString()
             storeFile = file(keyProps["storeFile"].toString())
@@ -37,7 +37,8 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
