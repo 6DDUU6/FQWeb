@@ -75,7 +75,7 @@ object Config {
                         "a",
                         FullRequest
                     )
-                    "$rpcApiPackage.e"
+                    return@lazy "$rpcApiPackage.e"
                 }
                 "$rpcApiPackage.f"
             }
