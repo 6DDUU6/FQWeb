@@ -2,14 +2,10 @@ package me.fycz.fqweb.web
 
 import android.graphics.Bitmap
 import fi.iki.elonen.NanoHTTPD
-import okio.Pipe
-import okio.buffer
 import me.fycz.fqweb.utils.JsonUtils
 import me.fycz.fqweb.web.controller.DragonController
-import java.io.BufferedWriter
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.OutputStreamWriter
 import java.lang.Exception
 
 /**
@@ -31,8 +27,14 @@ class HttpServer(port: Int) : NanoHTTPD(port) {
                     "/info" -> DragonController.info(parameters)
                     "/catalog" -> DragonController.catalog(parameters)
                     "/content" -> DragonController.content(parameters)
-                    "/reading/bookapi/bookmall/cell/change/v1/" -> DragonController.bookMall(parameters)
-                    "/reading/bookapi/new_category/landing/v/" -> DragonController.newCategory(parameters)
+                    "/reading/bookapi/bookmall/cell/change/v1/" -> DragonController.bookMall(
+                        parameters
+                    )
+
+                    "/reading/bookapi/new_category/landing/v/" -> DragonController.newCategory(
+                        parameters
+                    )
+
                     else -> null
                 }
             }/* else if (session.method == Method.POST) {
@@ -57,22 +59,7 @@ class HttpServer(port: Int) : NanoHTTPD(port) {
                     byteArray.size.toLong()
                 )
             } else {
-                val data = returnData.data
-                if (data is List<*> && data.size > 3000) {
-                    val pipe = Pipe(16 * 1024)
-                    pipe.sink.buffer().outputStream().use { out ->
-                        BufferedWriter(OutputStreamWriter(out, "UTF-8")).use {
-                            JsonUtils.toJson(returnData, it)
-                        }
-                    }
-                    newChunkedResponse(
-                        Response.Status.OK,
-                        "application/json",
-                        pipe.source.buffer().inputStream()
-                    )
-                } else {
-                    newFixedLengthResponse(JsonUtils.toJson(returnData))
-                }
+                newFixedLengthResponse(JsonUtils.toJson(returnData))
             }
             response.addHeader("Access-Control-Allow-Methods", "GET, POST")
             response.addHeader("Access-Control-Allow-Origin", session.headers["origin"])

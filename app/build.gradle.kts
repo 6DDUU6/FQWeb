@@ -68,8 +68,6 @@ android {
 dependencies {
     compileOnly(files("libs/api-82.jar"))
 
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
-
     //webServer
     implementation("org.nanohttpd:nanohttpd:2.3.1")
 
