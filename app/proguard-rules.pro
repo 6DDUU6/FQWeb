@@ -166,4 +166,5 @@
 -keep class **Exception
 
 # 保留
--keep class me.fycz.fqweb.** {*;}
+-keep class me.fycz.fqweb.MainHook
+-keepclassmembers class me.fycz.fqweb.web.ReturnData {<fields>;}
