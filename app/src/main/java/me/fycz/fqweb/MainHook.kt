@@ -1,5 +1,6 @@
 package me.fycz.fqweb
 
+import android.R.attr
 import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
@@ -14,6 +15,8 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import de.robv.android.xposed.IXposedHookLoadPackage
+import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import me.fycz.fqweb.constant.Config
 import me.fycz.fqweb.utils.GlobalApp
@@ -55,6 +58,7 @@ class MainHook : IXposedHookLoadPackage {
                 SPUtils.init(app)
                 httpServer = HttpServer(SPUtils.getInt("port", 9999))
                 hookSetting(lpparam.classLoader)
+                hookUpdate(lpparam.classLoader)
                 if (!httpServer.isAlive && SPUtils.getBoolean("autoStart", false)) {
                     try {
                         httpServer.start()
@@ -282,5 +286,18 @@ class MainHook : IXposedHookLoadPackage {
     private fun dp2px(context: Context, dipValue: Float): Int {
         val scale = context.resources.displayMetrics.density
         return (dipValue * scale + 0.5f).toInt()
+    }
+
+    private fun hookUpdate(classLoader: ClassLoader) {
+        val unhook = "com.dragon.read.update.d".replaceMethod(
+            classLoader,
+            "a",
+            Int::class.java,
+            "com.ss.android.update.OnUpdateStatusChangedListener"
+        ) {}
+        if (unhook != null) {
+            return
+        }
+        "com.dragon.read.update.d".replaceMethod(classLoader, "a", Int::class.java) {}
     }
 }
